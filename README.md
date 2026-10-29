@@ -199,3 +199,7 @@ Do the following fixes and edits in the uploaded edited zip:
 
 1. Change font style. Use simple font and increase font size. Decrease the font size of the hero title and increase the remaining font size as they are too small to read
 2. Check complete responsiveness, SEO optimization, accessibility, security, maintenance
+
+--------
+
+&copy; 2026 Tayyaba Zubaid. All rights reserved.
