@@ -4,7 +4,7 @@ const projects = [
     title: 'Deenify', category: 'web', categoryLabel: 'Web Design',
     description: 'A mobile-first Islamic website with five focused pages: Home, About, Features, FAQs, and Contact.',
     stack: ['HTML5', 'CSS3', 'Responsive UI'], image: 'assets/projects/deenify.png',
-    github: 'https://github.com/Tayyaba-tz', live: '#contact'
+    github: 'https://github.com/Tayyaba-tz', live: 'https://deenify-tk.netlify.app/'
   },
   {
     title: 'FinTrack', category: 'desktop', categoryLabel: 'Desktop App',
@@ -16,13 +16,13 @@ const projects = [
     title: 'Pokemon Info Card', category: 'web', categoryLabel: 'Web Design',
     description: 'A Pokémon encyclopedia for 1,000+ entries, powered by PokeAPI, with generation filters, stat visuals, and pagination.',
     stack: ['JavaScript', 'PokeAPI', 'REST API'], image: 'assets/projects/pokemon.png',
-    github: 'https://github.com/Tayyaba-tz', live: '#contact'
+    github: 'https://github.com/Tayyaba-tz', live: 'https://pokemon-info-card.netlify.app/'
   },
   {
     title: 'Weather Dashboard', category: 'web', categoryLabel: 'Web Design',
     description: 'Live weather for major Pakistani cities with day/night themes, unit conversion, and hourly forecast refreshes.',
     stack: ['HTML5', 'CSS3', 'JavaScript'], image: 'assets/projects/weather.png',
-    github: 'https://github.com/Tayyaba-tz', live: '#contact'
+    github: 'https://github.com/Tayyaba-tz', live: 'https://weather-dash-tz.netlify.app/'
   },
   {
     title: 'Disaster Evacuation Planner', category: 'console', categoryLabel: 'Console-based',
@@ -34,7 +34,7 @@ const projects = [
     title: 'Tomzora Image Gallery', category: 'web', categoryLabel: 'Web Design',
     description: 'A responsive, multi-theme gallery with live Unsplash search across 1,000+ photos and advanced filtering.',
     stack: ['Vanilla JavaScript', 'Unsplash API', 'CSS'], image: 'assets/projects/tomzora.png',
-    github: 'https://github.com/Tayyaba-tz', live: '#contact'
+    github: 'https://github.com/Tayyaba-tz', live: 'https://tomzora.netlify.app/'
   },
   {
     title: 'Hybrid Sorting Algorithm', category: 'desktop', categoryLabel: 'Desktop App',
@@ -53,32 +53,71 @@ function createProjectCard(project, index) {
   card.className = 'project-card';
   card.dataset.category = project.category;
   card.style.animationDelay = `${index * 35}ms`;
-  const stack = project.stack.map((tech) => `<span>${tech}</span>`).join('');
-  const safeTitle = project.title.replaceAll('"', '&quot;');
-  card.innerHTML = `
-    <div class="project-art">
-      <img src="${project.image}" alt="${safeTitle} project preview" decoding="async">
-      <div class="project-overlay">
-        <span class="project-category">${project.categoryLabel}</span>
-        <h3>${project.title}</h3>
-        <p>${project.description}</p>
-        <div class="project-techs">${stack}</div>
-        <div class="project-links">
-          <a href="${project.github || githubProfile}" target="_blank" rel="noreferrer">GitHub<span aria-hidden="true">↗</span></a>
-          <a href="${project.live || '#contact'}" ${project.live && project.live.startsWith('http') ? 'target="_blank" rel="noreferrer"' : ''}>Live<span aria-hidden="true">↗</span></a>
-        </div>
-      </div>
-    </div>
-    <div class="project-mobile-details">
-      <span class="project-category">${project.categoryLabel}</span>
-      <h3>${project.title}</h3>
-      <p>${project.description}</p>
-      <div class="project-techs">${stack}</div>
-      <div class="project-links">
-        <a href="${project.github || githubProfile}" target="_blank" rel="noreferrer">GitHub<span aria-hidden="true">↗</span></a>
-        <a href="${project.live || '#contact'}" ${project.live && project.live.startsWith('http') ? 'target="_blank" rel="noreferrer"' : ''}>Live<span aria-hidden="true">↗</span></a>
-      </div>
-    </div>`;
+
+  const makeText = (tag, className, text) => {
+    const element = document.createElement(tag);
+    if (className) element.className = className;
+    element.textContent = text;
+    return element;
+  };
+  const makeTechs = () => {
+    const list = document.createElement('div');
+    list.className = 'project-techs';
+    project.stack.forEach((tech) => list.append(makeText('span', '', tech)));
+    return list;
+  };
+  const makeLinks = () => {
+    const links = document.createElement('div');
+    links.className = 'project-links';
+    const github = document.createElement('a');
+    github.href = project.github || githubProfile;
+    github.target = '_blank';
+    github.rel = 'noopener noreferrer';
+    github.append(document.createTextNode('GitHub'));
+    github.append(makeText('span', '', '↗'));
+    github.lastElementChild.setAttribute('aria-hidden', 'true');
+    links.append(github);
+    // Only advertise a live demo when it is actually deployed on Vercel or Netlify.
+    let liveHost = '';
+    try { liveHost = new URL(project.live).hostname.toLowerCase(); } catch { /* no deployed URL */ }
+    const isDeployed = project.category === 'web' && /^https?:\/\//i.test(project.live || '') &&
+      (liveHost === 'vercel.app' || liveHost.endsWith('.vercel.app') ||
+       liveHost === 'netlify.app' || liveHost.endsWith('.netlify.app'));
+    if (isDeployed) {
+      const live = document.createElement('a');
+      live.href = project.live;
+      live.target = '_blank';
+      live.rel = 'noopener noreferrer';
+      live.append(document.createTextNode('Live'));
+      live.append(makeText('span', '', '↗'));
+      live.lastElementChild.setAttribute('aria-hidden', 'true');
+      links.append(live);
+    }
+    return links;
+  };
+  const art = document.createElement('div');
+  art.className = 'project-art';
+  const image = document.createElement('img');
+  image.src = project.image;
+  image.alt = `${project.title} project preview`;
+  image.loading = 'lazy';
+  image.decoding = 'async';
+  art.append(image);
+  const overlay = document.createElement('div');
+  overlay.className = 'project-overlay';
+  overlay.append(makeText('span', 'project-category', project.categoryLabel));
+  overlay.append(makeText('h3', '', project.title));
+  overlay.append(makeText('p', '', project.description));
+  overlay.append(makeTechs(), makeLinks());
+  art.append(overlay);
+
+  const details = document.createElement('div');
+  details.className = 'project-mobile-details';
+  details.append(makeText('span', 'project-category', project.categoryLabel));
+  details.append(makeText('h3', '', project.title));
+  details.append(makeText('p', '', project.description));
+  details.append(makeTechs(), makeLinks());
+  card.append(art, details);
   return card;
 }
 

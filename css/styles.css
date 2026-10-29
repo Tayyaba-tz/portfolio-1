@@ -9,8 +9,8 @@
   --line: #e9e0e1;
   --lilac: #cbb9ed;
   --max-width: 1160px;
-  --display: 'Syne', sans-serif;
-  --body: 'Inter', sans-serif;
+  --display: Arial, Helvetica, sans-serif;
+  --body: Arial, Helvetica, sans-serif;
 }
 
 * {
@@ -728,7 +728,7 @@ button {
   align-items: flex-start;
   gap: 10px;
   color: #4d454c;
-  font-size: 11px;
+  font-size: 15px;
   line-height: 1.55;
 }
 
@@ -2816,4 +2816,62 @@ body.arcade-theme .achievement-dismiss:hover {
     max-width: 100%;
     overflow-wrap: anywhere;
   }
+}
+
+/* Readability and responsive hardening (overrides legacy compact theme values). */
+html { font-size: 100%; }
+body { font-family: Arial, Helvetica, sans-serif; font-size: 16px; line-height: 1.65; }
+.hero h1 { font-size: clamp(60px, 9vw, 104px); line-height: .9; letter-spacing: -.07em; }
+.hero-copy { font-size: 17px; line-height: 1.75; }
+.hero-pretitle { font: 600 15px/1.5 Arial, Helvetica, sans-serif; letter-spacing: .05em; }
+.eyebrow-pill, .nav-link, .button, .text-link, .hero-note { font-family: Arial, Helvetica, sans-serif; }
+.eyebrow-pill { font-size: 14px; }
+.nav-link { font-size: 15px; }
+.button { font-size: 15px; }
+.button-small { font-size: 14px; }
+.text-link { font-size: 15px; }
+.hero-note { font-size: 12px; }
+.stat-label { font-size: 14px; }
+.section-aside, .about-lead, .about-body, .check-list, .about-fact strong,
+.about-fact > p:not(.about-fact-label), .certificate-list li,
+.skill-item, .project-toolbar > p, .filter-button, .project-mobile-details p,
+.project-links a, .project-note, .contact-intro, .contact-card-value,
+.site-footer p, .achievement-copy small { font-size: 15px; }
+.section-kicker, .about-fact-label, .project-category { font-size: 13px; }
+.skill-group-heading h3 { font-size: 18px; }
+.project-mobile-details h3, .project-overlay h3 { font-size: 21px; }
+.project-overlay p { font-size: 15px; line-height: 1.6; }
+.project-techs span { font-size: 13px; }
+.contact-card-label { font-size: 14px; }
+.contact-card strong { font-size: 21px; }
+.site-footer .copyright { font-size: 14px; }
+:where(a, button, input, select, textarea, [tabindex]):focus-visible { outline: 3px solid #ffbf47; outline-offset: 4px; }
+img { max-width: 100%; }
+section, article, .section-shell, .nav-shell, .stats-inner { min-width: 0; }
+.project-card[hidden] { display: none !important; }
+@media (max-width: 960px) {
+  .nav-link { font-size: 15px; }
+}
+@media (max-width: 720px) {
+  .hero { min-height: 640px; padding: 118px 20px 78px; }
+  body.arcade-theme .hero h1 { font-size: clamp(48px, 11vw, 72px); line-height: .95; }
+  .hero-copy { font-size: 16px; }
+  .hero-note { font-size: 12px; }
+  .hero-actions .button { font-size: 14px; }
+  .hero-actions .text-link { font-size: 14px; }
+  .section-aside { font-size: 15px; }
+  .about-fact > p:not(.about-fact-label), .certificate-list li { font-size: 14px; }
+  .skill-item { font-size: 14px; }
+  .project-mobile-details p, .project-links a { font-size: 15px; }
+  .project-techs span { font-size: 13px; }
+  .contact-intro { font-size: 16px; }
+}
+@media (max-width: 380px) {
+  .section-shell, .nav-shell, .stats-inner { width: calc(100% - 30px); }
+  .hero-note { font-size: 11px; }
+  .skill-item { grid-template-columns: minmax(0, 1fr) minmax(70px, .8fr); }
+}
+@media (forced-colors: active) {
+  .button, .filter-button, .menu-toggle { border: 1px solid ButtonText; }
+  .status-dot { forced-color-adjust: none; }
 }
