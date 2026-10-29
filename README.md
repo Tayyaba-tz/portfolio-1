@@ -4,7 +4,7 @@ A responsive single-page portfolio for Tayyaba Zubaid, a Computer Science underg
 
 ## Live Site
 
-**Vercel:** [https://tayyaba-portfolio-1.vercel.app/](https://portfolio-1-rho-drab-21.vercel.app/)
+**Vercel:** [https://tayyaba-portfolio-1.vercel.app/](https://tayyaba-portfolio-1.vercel.app/)
 
 ## Features
 
