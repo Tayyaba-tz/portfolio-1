@@ -57,7 +57,7 @@ function createProjectCard(project, index) {
   const safeTitle = project.title.replaceAll('"', '&quot;');
   card.innerHTML = `
     <div class="project-art">
-      <img src="${project.image}" alt="${safeTitle} project preview" loading="lazy">
+      <img src="${project.image}" alt="${safeTitle} project preview" decoding="async">
       <div class="project-overlay">
         <span class="project-category">${project.categoryLabel}</span>
         <h3>${project.title}</h3>
@@ -181,6 +181,7 @@ if ('IntersectionObserver' in window) {
       if (active) link.setAttribute('aria-current', 'location');
       else link.removeAttribute('aria-current');
     });
+    if (['skills', 'projects', 'contact'].includes(visible.target.id)) showAchievement(visible.target.id);
   }, { rootMargin: '-22% 0px -60% 0px', threshold: [0, .15, .4] });
   sections.forEach((section) => navObserver.observe(section));
 } else {
@@ -190,3 +191,74 @@ if ('IntersectionObserver' in window) {
 
 const year = document.querySelector('#current-year');
 if (year) year.textContent = String(new Date().getFullYear());
+
+const achievementToast = document.querySelector('#achievement-toast');
+const achievementTitle = document.querySelector('#achievement-title');
+const achievementDismiss = document.querySelector('.achievement-dismiss');
+const earnedAchievements = new Set();
+let achievementTimeout;
+
+function showAchievement(sectionId) {
+  const rewards = {
+    skills: 'Ability tree mapped',
+    projects: 'Quest log discovered',
+    contact: 'Next mission unlocked'
+  };
+  const reward = rewards[sectionId];
+  if (!reward || !achievementToast || !achievementTitle || earnedAchievements.has(sectionId)) return;
+  earnedAchievements.add(sectionId);
+  achievementTitle.textContent = reward;
+  achievementToast.classList.add('is-visible');
+  window.clearTimeout(achievementTimeout);
+  achievementTimeout = window.setTimeout(() => achievementToast.classList.remove('is-visible'), 3600);
+}
+
+if (achievementDismiss && achievementToast) {
+  achievementDismiss.addEventListener('click', () => {
+    window.clearTimeout(achievementTimeout);
+    achievementToast.classList.remove('is-visible');
+  });
+}
+
+const progressFill = document.querySelector('#arcade-progress-fill');
+let progressFramePending = false;
+function updateArcadeProgress() {
+  if (!progressFill) return;
+  const scrollableDistance = Math.max(document.documentElement.scrollHeight - window.innerHeight, 1);
+  const progress = Math.min(Math.max(window.scrollY / scrollableDistance, 0), 1);
+  progressFill.style.width = `${progress * 100}%`;
+}
+window.addEventListener('scroll', () => {
+  if (progressFramePending) return;
+  progressFramePending = true;
+  requestAnimationFrame(() => {
+    updateArcadeProgress();
+    progressFramePending = false;
+  });
+}, { passive: true });
+window.addEventListener('resize', updateArcadeProgress);
+updateArcadeProgress();
+
+const reducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const finePointer = window.matchMedia && window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+if (projectGrid && finePointer && !reducedMotion) {
+  projectGrid.querySelectorAll('.project-card').forEach((card) => {
+    const resetTilt = () => {
+      card.classList.remove('is-tilting');
+      card.style.removeProperty('--tilt-x');
+      card.style.removeProperty('--tilt-y');
+    };
+    card.addEventListener('pointermove', (event) => {
+      if (event.pointerType !== 'mouse' && event.pointerType !== 'pen') return;
+      const bounds = card.getBoundingClientRect();
+      if (!bounds.width || !bounds.height) return;
+      const x = (event.clientX - bounds.left) / bounds.width - .5;
+      const y = (event.clientY - bounds.top) / bounds.height - .5;
+      card.style.setProperty('--tilt-x', `${(-y * 5).toFixed(2)}deg`);
+      card.style.setProperty('--tilt-y', `${(x * 7).toFixed(2)}deg`);
+      card.classList.add('is-tilting');
+    });
+    card.addEventListener('pointerleave', resetTilt);
+    card.addEventListener('pointercancel', resetTilt);
+  });
+}
